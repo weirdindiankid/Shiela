@@ -15,5 +15,7 @@ Once you have installed this, follow the steps below:
 
 3. Move the file named 'shiela' to /usr/local/bin
 
+4. Change the mysqli functions to represent your database name and username and password and (rarely) host.
+
 The code here is horribly written and I plan on cleaning it up sometime in the future.
 Feel free to fork this repo and make something better.
