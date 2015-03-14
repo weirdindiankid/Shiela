@@ -5,7 +5,7 @@ Important:
 
 This application needs the following PEAR repository to run:
 
-<a href="http://pear.php.net/package/System_Daemon">PHP System Daemon</a>
+<a target="_blank" href="http://pear.php.net/package/System_Daemon">PHP System Daemon</a>
 
 Once you have installed this, follow the steps below:
 
