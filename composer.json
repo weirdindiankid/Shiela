@@ -1,0 +1,8 @@
+{
+  "name" : "dharmesh/shiela",
+  "description" : "Auto post page scheduler",
+  "license" : "proprietary",
+  "require" : {
+    "facebook/php-sdk-v4" : "4.0.*"
+  }
+}

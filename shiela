@@ -1,0 +1,111 @@
+#!/usr/bin/php -q
+<?php
+/**
+ * System_Daemon turns PHP-CLI scripts into daemons.
+ * 
+ * PHP version 5
+ *
+ * @category  System
+ * @package   System_Daemon
+ * @author    Kevin <kevin@vanzonneveld.net>
+ * @copyright 2008 Kevin van Zonneveld
+ * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
+ * @version   SVN: Release: $Id: simple.php 276201 2009-02-20 16:55:07Z kvz $
+ * @link      http://trac.plutonia.nl/projects/system_daemon
+ */
+
+/**
+ * System_Daemon Example Code
+ * 
+ * If you run this code successfully, a daemon will be spawned
+ * and stopped directly. You should find a log enty in 
+ * /var/log/simple.log
+ * 
+ */
+
+// Make it possible to test in source directory
+// This is for PEAR developers only
+
+
+ini_set('include_path', ini_get('include_path').':..');
+
+// Include Class
+error_reporting(E_ALL);
+require_once "System/Daemon.php";
+
+// Bare minimum setup
+System_Daemon::setOption("appName", "shiela");
+System_Daemon::setOption("authorEmail", "example@example.com");
+
+//System_Daemon::setOption("appDir", dirname(__FILE__));
+
+
+
+// Spawn Deamon!
+System_Daemon::start();
+
+require './vendor/autoload.php';
+
+while(1) { 
+
+
+$db = mysqli_connect('localhost', 'username', 'password', 'database');
+
+$now = time();
+
+$res = mysqli_query($db, 'SELECT * FROM scheduled WHERE time_at = '.$now);
+
+$result = mysqli_fetch_assoc($res); 
+
+if(!empty($result)) {
+
+require './vendor/autoload.php';
+use Facebook\FacebookSession;
+use Facebook\FacebookRedirectLoginHelper;
+use Facebook\FacebookRequest;
+use Facebook\FacebookResponse;
+use Facebook\FacebookSDKException;
+use Facebook\FacebookRequestException;
+use Facebook\FacebookAuthorizationException;
+use Facebook\GraphObject;
+
+$appID = '';
+$appSecret = '';
+$baseUrl = '';
+
+FacebookSession::setDefaultApplication($appID, $appSecret);
+
+$tmptoken= $result['access_token'];
+
+$session = new FacebookSession($tmptoken);
+
+$temp_file = $result['image_path'];
+
+$page_id = $result['page_id'];
+
+$upload_dir = '';
+
+$full_path = $upload_dir .'/'. $temp_file;
+
+$message = $result['message'];
+
+$response = (new FacebookRequest(
+      $session, 'POST', '/me/photos', array(
+        'source' => new CURLFile(''.$full_path.'', 'image/png'),
+        'message' => ''.$message.''
+      )
+    ))->execute()->getGraphObject();
+
+mysqli_query($db, 'DELETE FROM scheduled WHERE image_path = \''.$temp_file.'\'');
+$old = getcwd();
+chdir('');
+$tmp_file = trim($temp_file);
+unlink($temp_file);
+chdir($old);
+continue;
+}
+}
+
+
+//System_Daemon::stop();
+?>
